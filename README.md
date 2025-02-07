@@ -34,7 +34,7 @@ The **AI Image Caption Generator** is a web-based application that allows users 
 4. Copy or use the caption as needed.
 
 ## 🎨 Preview
-(screenshot.jpeg)
+
 
 ## 🔥 Future Enhancements
 - Dark Mode toggle
@@ -44,4 +44,6 @@ The **AI Image Caption Generator** is a web-based application that allows users 
 ## 📜 License
 This project is licensed under the MIT License.
 
-## 💡 Created with ❤️ by Nicolette Mashaba('https://nicolettemashaba.vercel.app/')
+## 💡 Created with ❤️ by Nicolette Mashaba
+📧 Email: [nene171408@gmail.com](nene171408@gmail.com)  
+🔗 [LinkedIn](https://www.linkedin.com/in/nicolette-mashaba-b094a5221/) | [GitHub](https://github.com/NickiMash17) | [Portfolio Website](https://nicolettemashaba.vercel.app/) 
