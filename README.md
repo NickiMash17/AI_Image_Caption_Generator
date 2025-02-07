@@ -35,6 +35,8 @@ The **AI Image Caption Generator** is a web-based application that allows users 
 
 ## 🎨 Preview
 
+![Image Caption Generator Preview](screenshot.jpeg)
+
 
 ## 🔥 Future Enhancements
 - Dark Mode toggle
