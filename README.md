@@ -15,7 +15,7 @@ The **AI Image Caption Generator** is a web-based application that allows users 
 ## 📦 Installation & Setup
 1. **Clone this repository:**
    ```bash
-   git clone https://github.com/your-username/image-caption-generator.git
+   git clone https://github.com/NickiMash17/image-caption-generator.git
    cd image-caption-generator
    
 2. **Get an OpenAI API Key:**
