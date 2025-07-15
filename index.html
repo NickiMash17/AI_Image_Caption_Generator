@@ -31,26 +31,26 @@
                     <span>Dark Mode</span>
                 </button>
             </div>
-            <div class="upload-area" id="uploadArea">
-                <i class="fas fa-cloud-upload-alt upload-icon"></i>
-                <div class="upload-text">Drop your image here or click to browse</div>
-                <div class="upload-subtext">Professional AI-powered image analysis</div>
-                <div class="upload-features">
-                    <div class="upload-feature">
-                        <i class="fas fa-image"></i>
-                        <span>JPG, PNG, GIF, WEBP</span>
-                    </div>
-                    <div class="upload-feature">
-                        <i class="fas fa-weight-hanging"></i>
-                        <span>Up to 10MB</span>
-                    </div>
-                    <div class="upload-feature">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>Secure Processing</span>
-                    </div>
-                </div>
-                <input type="file" id="imageInput" accept="image/*">
+                <div class="upload-area" id="uploadArea" role="button" tabindex="0" aria-label="Upload image area - click or drag to upload">
+        <i class="fas fa-cloud-upload-alt upload-icon" aria-hidden="true"></i>
+        <div class="upload-text">Drop your image here or click to browse</div>
+        <div class="upload-subtext">Professional AI-powered image analysis</div>
+        <div class="upload-features">
+            <div class="upload-feature">
+                <i class="fas fa-image" aria-hidden="true"></i>
+                <span>JPG, PNG, GIF, WEBP</span>
             </div>
+            <div class="upload-feature">
+                <i class="fas fa-weight-hanging" aria-hidden="true"></i>
+                <span>Up to 10MB</span>
+            </div>
+            <div class="upload-feature">
+                <i class="fas fa-shield-alt" aria-hidden="true"></i>
+                <span>Secure Processing</span>
+            </div>
+        </div>
+        <input type="file" id="imageInput" accept="image/*" aria-label="Select image file">
+    </div>
             <div class="preview-container" id="previewContainer">
                 <img id="previewImage" class="preview-image" alt="Preview">
                 <div class="image-overlay">
@@ -61,21 +61,21 @@
                     </div>
                 </div>
             </div>
-            <div class="action-buttons">
-                <button class="btn btn-primary" id="generateBtn" disabled>
-                    <i class="fas fa-magic"></i>
+            <div class="action-buttons" role="group" aria-label="Image processing actions">
+                <button class="btn btn-primary" id="generateBtn" disabled aria-label="Generate AI caption for the uploaded image">
+                    <i class="fas fa-magic" aria-hidden="true"></i>
                     <span>Generate Caption</span>
                 </button>
-                <button class="btn btn-secondary" id="analyzeBtn" disabled>
-                    <i class="fas fa-search-plus"></i>
+                <button class="btn btn-secondary" id="analyzeBtn" disabled aria-label="Perform deep analysis of the image">
+                    <i class="fas fa-search-plus" aria-hidden="true"></i>
                     <span>Deep Analysis</span>
                 </button>
-                <button class="btn btn-success" id="enhanceBtn" disabled>
-                    <i class="fas fa-wand-magic-sparkles"></i>
+                <button class="btn btn-success" id="enhanceBtn" disabled aria-label="Generate enhanced caption with more details">
+                    <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
                     <span>Enhanced Mode</span>
                 </button>
-                <button class="btn btn-outline" id="clearBtn">
-                    <i class="fas fa-trash-alt"></i>
+                <button class="btn btn-outline" id="clearBtn" aria-label="Clear all uploaded images and results">
+                    <i class="fas fa-trash-alt" aria-hidden="true"></i>
                     <span>Clear All</span>
                 </button>
             </div>
@@ -85,31 +85,31 @@
                 </div>
                 <div class="progress-text" id="progressText">Processing...</div>
             </div>
-            <div class="results-container" id="resultsContainer">
+            <div class="results-container" id="resultsContainer" role="region" aria-label="AI generated results">
                 <div class="results-header">
                     <div class="results-title">AI Generated Caption</div>
-                    <div class="confidence-badge" id="confidenceBadge"></div>
+                    <div class="confidence-badge" id="confidenceBadge" aria-label="Confidence score"></div>
                 </div>
-                <div class="caption-text" id="captionText"></div>
-                <div class="caption-actions">
-                    <button class="btn btn-outline" id="copyBtn">
-                        <i class="fas fa-copy"></i>
+                <div class="caption-text" id="captionText" role="textbox" aria-label="Generated caption text" aria-readonly="true"></div>
+                <div class="caption-actions" role="group" aria-label="Caption actions">
+                    <button class="btn btn-outline" id="copyBtn" aria-label="Copy caption to clipboard">
+                        <i class="fas fa-copy" aria-hidden="true"></i>
                         <span>Copy</span>
                     </button>
-                    <button class="btn btn-outline" id="downloadBtn">
-                        <i class="fas fa-download"></i>
+                    <button class="btn btn-outline" id="downloadBtn" aria-label="Download caption as text file">
+                        <i class="fas fa-download" aria-hidden="true"></i>
                         <span>Download</span>
                     </button>
-                    <button class="btn btn-outline" id="speakBtn">
-                        <i class="fas fa-volume-up"></i>
+                    <button class="btn btn-outline" id="speakBtn" aria-label="Read caption aloud">
+                        <i class="fas fa-volume-up" aria-hidden="true"></i>
                         <span>Speak</span>
                     </button>
-                    <button class="btn btn-outline" id="shareBtn">
-                        <i class="fas fa-share-alt"></i>
+                    <button class="btn btn-outline" id="shareBtn" aria-label="Share caption">
+                        <i class="fas fa-share-alt" aria-hidden="true"></i>
                         <span>Share</span>
                     </button>
-                    <button class="btn btn-outline" id="regenerateBtn">
-                        <i class="fas fa-sync-alt"></i>
+                    <button class="btn btn-outline" id="regenerateBtn" aria-label="Generate new caption">
+                        <i class="fas fa-sync-alt" aria-hidden="true"></i>
                         <span>Regenerate</span>
                     </button>
                 </div>
@@ -132,31 +132,31 @@
                     <div class="stat-label">Resolution</div>
                 </div>
             </div>
-            <div class="features-grid">
-                <div class="feature-card">
+            <div class="features-grid" role="list" aria-label="Application features">
+                <div class="feature-card" role="listitem">
                     <div class="feature-icon">
-                        <i class="fas fa-brain"></i>
+                        <i class="fas fa-brain" aria-hidden="true"></i>
                     </div>
                     <div class="feature-title">AI-Powered Analysis</div>
                     <div class="feature-description">Advanced neural networks for accurate image understanding</div>
                 </div>
-                <div class="feature-card">
+                <div class="feature-card" role="listitem">
                     <div class="feature-icon">
-                        <i class="fas fa-bolt"></i>
+                        <i class="fas fa-bolt" aria-hidden="true"></i>
                     </div>
                     <div class="feature-title">Lightning Fast</div>
                     <div class="feature-description">Optimized processing for rapid caption generation</div>
                 </div>
-                <div class="feature-card">
+                <div class="feature-card" role="listitem">
                     <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
+                        <i class="fas fa-shield-alt" aria-hidden="true"></i>
                     </div>
                     <div class="feature-title">Privacy First</div>
                     <div class="feature-description">Secure processing with no data retention</div>
                 </div>
-                <div class="feature-card">
+                <div class="feature-card" role="listitem">
                     <div class="feature-icon">
-                        <i class="fas fa-mobile-alt"></i>
+                        <i class="fas fa-mobile-alt" aria-hidden="true"></i>
                     </div>
                     <div class="feature-title">Mobile Ready</div>
                     <div class="feature-description">Responsive design for all devices</div>
@@ -164,10 +164,67 @@
             </div>
         </div>
     </div>
-    <div class="notification" id="notification"></div>
-    <div class="processing-animation" id="processingAnimation">
+    <div class="notification" id="notification" role="alert" aria-live="polite"></div>
+    <div class="processing-animation" id="processingAnimation" aria-hidden="true">
         <div class="processing-circle"></div>
     </div>
+    
+    <!-- Keyboard shortcuts help modal -->
+    <div class="modal" id="helpModal" role="dialog" aria-labelledby="helpModalTitle" aria-hidden="true">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="helpModalTitle">Keyboard Shortcuts</h2>
+                <button class="modal-close" id="closeHelpModal" aria-label="Close help modal">
+                    <i class="fas fa-times" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="shortcut-grid">
+                    <div class="shortcut-item">
+                        <kbd>Ctrl/Cmd + O</kbd>
+                        <span>Open file dialog</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl/Cmd + Enter</kbd>
+                        <span>Generate caption</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl/Cmd + C</kbd>
+                        <span>Copy caption</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl/Cmd + D</kbd>
+                        <span>Download caption</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl/Cmd + R</kbd>
+                        <span>Regenerate caption</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl/Cmd + K</kbd>
+                        <span>Clear all</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>Ctrl/Cmd + T</kbd>
+                        <span>Toggle theme</span>
+                    </div>
+                    <div class="shortcut-item">
+                        <kbd>F1</kbd>
+                        <span>Show this help</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading overlay for better UX -->
+    <div class="loading-overlay" id="loadingOverlay" aria-hidden="true">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Processing your image...</div>
+        </div>
+    </div>
+    
     <script src="script.js"></script>
 </body>
 </html>
