@@ -3,7 +3,10 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const fetch = require('node-fetch');
 
-dotenv.config();
+// Load environment variables from .env file
+require('dotenv').config();
+// Make sure you have a .env file in your project root with:
+// OPENAI_API_KEY=sk-proj-your_actual_openai_api_key_here
 
 const app = express();
 const PORT = 3000;
