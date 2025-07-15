@@ -49,3 +49,33 @@ This project is licensed under the MIT License.
 ## 💡 Created with ❤️ by Nicolette Mashaba
 📧 Email: [nene171408@gmail.com](nene171408@gmail.com)  
 🔗 [LinkedIn](https://www.linkedin.com/in/nicolette-mashaba-b094a5221/) | [GitHub](https://github.com/NickiMash17) | [Portfolio Website](https://nicolettemashaba.vercel.app/) 
+
+## 🖥️ Backend (Node.js/Express)
+A simple backend will be used to securely store your OpenAI API key and proxy requests from the frontend. This prevents exposing your API key in the browser.
+
+### Setup
+1. Install dependencies:
+   ```bash
+   npm install express cors dotenv node-fetch
+   ```
+2. Create a `.env` file in the project root with your OpenAI API key:
+   ```env
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+3. Start the backend server:
+   ```bash
+   node server.js
+   ```
+4. The frontend will send image caption requests to `http://localhost:3000/api/caption`. 
+
+## 🧪 Testing
+
+### Backend
+- Start the backend server: `node server.js`
+- Use a tool like Postman or curl to POST to `http://localhost:3000/api/caption` with a JSON body: `{ "image": "<base64 string>" }`.
+- You should receive a JSON response with a `caption` field.
+
+### Frontend
+- Open `index.html` in your browser.
+- Upload an image and click "Generate Caption".
+- You should see a caption, and be able to download or read it aloud. 

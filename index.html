@@ -3,18 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Image Caption Generator</title>
+    <title>AI Vision Caption Studio Pro</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>AI Image Caption Generator</h1>
-        <input type="file" id="imageInput" accept="image/*">
-        <button id="generateCaption">Generate Caption</button>
-        <div id="output">
-            <img id="previewImage" src="" alt="Uploaded Image" style="display: none;">
-            <p id="captionText"></p>
+    <div class="animated-bg">
+        <div class="floating-shapes">
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
+            <div class="shape"></div>
         </div>
+    </div>
+    <div class="container">
+        <div class="main-container fade-in">
+            <div class="header">
+                <h1>AI Vision Caption Studio <span class="version">PRO</span></h1>
+                <p class="subtitle">Transform images into intelligent descriptions with cutting-edge AI technology</p>
+            </div>
+            <div class="controls">
+                <div class="stats-preview">
+                    <span id="processingTime" style="opacity: 0.7; font-size: 0.9rem;"></span>
+                </div>
+                <button class="theme-toggle" id="themeToggle">
+                    <i class="fas fa-moon"></i>
+                    <span>Dark Mode</span>
+                </button>
+            </div>
+            <div class="upload-area" id="uploadArea">
+                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                <div class="upload-text">Drop your image here or click to browse</div>
+                <div class="upload-subtext">Professional AI-powered image analysis</div>
+                <div class="upload-features">
+                    <div class="upload-feature">
+                        <i class="fas fa-image"></i>
+                        <span>JPG, PNG, GIF, WEBP</span>
+                    </div>
+                    <div class="upload-feature">
+                        <i class="fas fa-weight-hanging"></i>
+                        <span>Up to 10MB</span>
+                    </div>
+                    <div class="upload-feature">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>Secure Processing</span>
+                    </div>
+                </div>
+                <input type="file" id="imageInput" accept="image/*">
+            </div>
+            <div class="preview-container" id="previewContainer">
+                <img id="previewImage" class="preview-image" alt="Preview">
+                <div class="image-overlay">
+                    <div class="image-info">
+                        <div id="imageSize"><i class="fas fa-expand-arrows-alt"></i> <span></span></div>
+                        <div id="imageType"><i class="fas fa-file-image"></i> <span></span></div>
+                        <div id="imageFileSize"><i class="fas fa-weight-hanging"></i> <span></span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="action-buttons">
+                <button class="btn btn-primary" id="generateBtn" disabled>
+                    <i class="fas fa-magic"></i>
+                    <span>Generate Caption</span>
+                </button>
+                <button class="btn btn-secondary" id="analyzeBtn" disabled>
+                    <i class="fas fa-search-plus"></i>
+                    <span>Deep Analysis</span>
+                </button>
+                <button class="btn btn-success" id="enhanceBtn" disabled>
+                    <i class="fas fa-wand-magic-sparkles"></i>
+                    <span>Enhanced Mode</span>
+                </button>
+                <button class="btn btn-outline" id="clearBtn">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>Clear All</span>
+                </button>
+            </div>
+            <div class="progress-container" id="progressContainer">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">Processing...</div>
+            </div>
+            <div class="results-container" id="resultsContainer">
+                <div class="results-header">
+                    <div class="results-title">AI Generated Caption</div>
+                    <div class="confidence-badge" id="confidenceBadge"></div>
+                </div>
+                <div class="caption-text" id="captionText"></div>
+                <div class="caption-actions">
+                    <button class="btn btn-outline" id="copyBtn">
+                        <i class="fas fa-copy"></i>
+                        <span>Copy</span>
+                    </button>
+                    <button class="btn btn-outline" id="downloadBtn">
+                        <i class="fas fa-download"></i>
+                        <span>Download</span>
+                    </button>
+                    <button class="btn btn-outline" id="speakBtn">
+                        <i class="fas fa-volume-up"></i>
+                        <span>Speak</span>
+                    </button>
+                    <button class="btn btn-outline" id="shareBtn">
+                        <i class="fas fa-share-alt"></i>
+                        <span>Share</span>
+                    </button>
+                    <button class="btn btn-outline" id="regenerateBtn">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>Regenerate</span>
+                    </button>
+                </div>
+            </div>
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card">
+                    <div class="stat-value" id="processingTimeValue">-</div>
+                    <div class="stat-label">Processing Time</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="confidenceValue">-</div>
+                    <div class="stat-label">Confidence</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="wordsValue">-</div>
+                    <div class="stat-label">Words Generated</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="resolutionValue">-</div>
+                    <div class="stat-label">Resolution</div>
+                </div>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <div class="feature-title">AI-Powered Analysis</div>
+                    <div class="feature-description">Advanced neural networks for accurate image understanding</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    <div class="feature-title">Lightning Fast</div>
+                    <div class="feature-description">Optimized processing for rapid caption generation</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div class="feature-title">Privacy First</div>
+                    <div class="feature-description">Secure processing with no data retention</div>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <div class="feature-title">Mobile Ready</div>
+                    <div class="feature-description">Responsive design for all devices</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="notification" id="notification"></div>
+    <div class="processing-animation" id="processingAnimation">
+        <div class="processing-circle"></div>
     </div>
     <script src="script.js"></script>
 </body>
