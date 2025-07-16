@@ -1,610 +1,273 @@
-// Enhanced Pro JS for AI Vision Caption Studio
-let currentImage = null;
-let processingStartTime = null;
-let isDarkMode = false;
-let isProcessing = false;
+// DOM Elements
+const uploadArea = document.getElementById('uploadArea');
+const imageInput = document.getElementById('imageInput');
+const previewContainer = document.getElementById('previewContainer');
+const previewImage = document.getElementById('previewImage');
+const generateBtn = document.getElementById('generateBtn');
+const enhanceBtn = document.getElementById('enhanceBtn');
+const resetBtn = document.getElementById('resetBtn');
+const copyBtn = document.getElementById('copyBtn');
+const downloadBtn = document.getElementById('downloadBtn');
+const shareBtn = document.getElementById('shareBtn');
+const resultsContainer = document.getElementById('resultsContainer');
+const progressContainer = document.getElementById('progressContainer');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+const captionText = document.getElementById('captionText');
+const confidenceBadge = document.getElementById('confidenceBadge');
+const imageName = document.getElementById('imageName');
+const imageDimensions = document.getElementById('imageDimensions');
+const imageSize = document.getElementById('imageSize');
+const objectsCount = document.getElementById('objectsCount');
+const processingTime = document.getElementById('processingTime');
+const wordsCount = document.getElementById('wordsCount');
+const accuracyScore = document.getElementById('accuracyScore');
+const themeToggle = document.getElementById('themeToggle');
+const notification = document.getElementById('notification');
 
-// Modal functionality
-const helpModal = document.getElementById('helpModal');
-const closeHelpModal = document.getElementById('closeHelpModal');
-const loadingOverlay = document.getElementById('loadingOverlay');
+// Demo captions
+const demoCaptions = [
+    "A serene mountain landscape at sunset with vibrant orange and pink hues reflecting off a calm lake, surrounded by evergreen trees and rocky peaks.",
+    "A bustling city street scene with pedestrians walking past modern glass skyscrapers under a clear blue sky, featuring taxis and urban architecture.",
+    "A close-up portrait of a young woman with freckles smiling naturally, with soft bokeh lights in the background creating a warm atmosphere.",
+    "A delicious gourmet burger with melted cheese, crispy bacon, and fresh vegetables on a wooden table, accompanied by golden french fries.",
+    "An adorable golden retriever puppy playing in a sunlit garden with green grass and colorful flowers, looking curiously at the camera."
+];
 
-// Keyboard shortcuts
-document.addEventListener('keydown', (e) => {
-    if (isProcessing) return; // Disable shortcuts during processing
+// Demo stats
+const demoStats = {
+    objects: [8, 15, 5, 7, 4],
+    time: [1.8, 2.3, 1.5, 1.2, 1.0],
+    words: [28, 35, 22, 30, 25],
+    accuracy: [95, 92, 97, 94, 98]
+};
+
+// Event Listeners
+uploadArea.addEventListener('click', () => imageInput.click());
+uploadArea.addEventListener('dragover', handleDragOver);
+uploadArea.addEventListener('dragleave', handleDragLeave);
+uploadArea.addEventListener('drop', handleDrop);
+imageInput.addEventListener('change', handleFileSelect);
+generateBtn.addEventListener('click', generateCaption);
+enhanceBtn.addEventListener('click', enhanceCaption);
+resetBtn.addEventListener('click', resetAll);
+copyBtn.addEventListener('click', copyCaption);
+downloadBtn.addEventListener('click', downloadCaption);
+shareBtn.addEventListener('click', shareCaption);
+themeToggle.addEventListener('click', toggleTheme);
+
+// Functions
+function handleDragOver(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadArea.classList.add('dragover');
+}
+
+function handleDragLeave(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadArea.classList.remove('dragover');
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    uploadArea.classList.remove('dragover');
     
-    const isCtrlOrCmd = e.ctrlKey || e.metaKey;
-    
-    switch (e.key) {
-        case 'o':
-            if (isCtrlOrCmd) {
-                e.preventDefault();
-                document.getElementById('imageInput').click();
-            }
-            break;
-        case 'Enter':
-            if (isCtrlOrCmd && currentImage) {
-                e.preventDefault();
-                generateCaption();
-            }
-            break;
-        case 'c':
-            if (isCtrlOrCmd && captionText.textContent) {
-                e.preventDefault();
-                copyCaption();
-            }
-            break;
-        case 'd':
-            if (isCtrlOrCmd && captionText.textContent) {
-                e.preventDefault();
-                downloadCaption();
-            }
-            break;
-        case 'r':
-            if (isCtrlOrCmd && currentImage) {
-                e.preventDefault();
-                regenerateCaption();
-            }
-            break;
-        case 'k':
-            if (isCtrlOrCmd) {
-                e.preventDefault();
-                clearAll();
-            }
-            break;
-        case 't':
-            if (isCtrlOrCmd) {
-                e.preventDefault();
-                themeToggle.click();
-            }
-            break;
-        case 'F1':
-            e.preventDefault();
-            showHelpModal();
-            break;
-        case 'Escape':
-            if (helpModal.classList.contains('show')) {
-                hideHelpModal();
-            }
-            break;
+    if (e.dataTransfer.files.length) {
+        imageInput.files = e.dataTransfer.files;
+        handleFileSelect({ target: imageInput });
     }
-});
-
-// Modal functions
-function showHelpModal() {
-    helpModal.classList.add('show');
-    helpModal.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
 }
 
-function hideHelpModal() {
-    helpModal.classList.remove('show');
-    helpModal.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
-}
+function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (!file) return;
 
-closeHelpModal.addEventListener('click', hideHelpModal);
-helpModal.addEventListener('click', (e) => {
-    if (e.target === helpModal) {
-        hideHelpModal();
+    if (!file.type.match('image.*')) {
+        showNotification('Please select an image file (JPG, PNG, WEBP)', 'error');
+        return;
     }
-});
 
-// Loading overlay functions
-function showLoadingOverlay() {
-    loadingOverlay.classList.add('show');
-    loadingOverlay.setAttribute('aria-hidden', 'false');
-}
+        const reader = new FileReader();
+    reader.onload = function(event) {
+        previewImage.src = event.target.result;
+        previewContainer.style.display = 'block';
+        uploadArea.style.display = 'none';
+        
+        // Update image info
+        imageName.textContent = file.name;
+        imageSize.textContent = formatFileSize(file.size);
+        
+        // Enable buttons
+        generateBtn.disabled = false;
+        enhanceBtn.disabled = false;
+        resetBtn.disabled = false;
+        
+        // Get image dimensions
+        const img = new Image();
+        img.onload = function() {
+            imageDimensions.textContent = `${this.width}×${this.height}`;
+        };
+        img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
 
-function hideLoadingOverlay() {
-    loadingOverlay.classList.remove('show');
-    loadingOverlay.setAttribute('aria-hidden', 'true');
-}
-
-// Utility: Format bytes to human-readable
-function formatBytes(bytes) {
+function formatFileSize(bytes) {
     if (bytes === 0) return '0 Bytes';
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
 }
 
-// Utility: Compress image for better performance
-function compressImage(file, maxWidth = 1920, quality = 0.8) {
-    return new Promise((resolve) => {
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
-        
-        img.onload = () => {
-            const ratio = Math.min(maxWidth / img.width, maxWidth / img.height);
-            canvas.width = img.width * ratio;
-            canvas.height = img.height * ratio;
-            
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            canvas.toBlob(resolve, 'image/jpeg', quality);
-        };
-        
-        img.src = URL.createObjectURL(file);
-    });
-}
-
-// Utility: Validate file type and size
-function validateFile(file) {
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    const maxSize = 10 * 1024 * 1024; // 10MB
-    
-    if (!allowedTypes.includes(file.type)) {
-        throw new Error('Unsupported file type. Please use JPG, PNG, GIF, or WEBP.');
-    }
-    
-    if (file.size > maxSize) {
-        throw new Error('File too large. Please use images under 10MB.');
-    }
-    
-    return true;
-}
-
-// Utility: Show loading state
-function setLoadingState(loading) {
-    isProcessing = loading;
-    const generateBtn = document.getElementById('generateBtn');
-    const analyzeBtn = document.getElementById('analyzeBtn');
-    const enhanceBtn = document.getElementById('enhanceBtn');
-    
-    if (loading) {
-        generateBtn.innerHTML = '<div class="loading-spinner"></div><span>Processing...</span>';
-        generateBtn.disabled = true;
-        analyzeBtn.disabled = true;
-        enhanceBtn.disabled = true;
-        showProgress(10, 'Initializing...');
-    } else {
-        generateBtn.innerHTML = '<i class="fas fa-magic"></i><span>Generate Caption</span>';
-        generateBtn.disabled = false;
-        analyzeBtn.disabled = false;
-        enhanceBtn.disabled = false;
-        hideProgress();
-    }
-}
-
-// Theme toggle with localStorage persistence
-const themeToggle = document.getElementById('themeToggle');
-function initTheme() {
-    const savedTheme = localStorage.getItem('darkMode');
-    if (savedTheme === 'true') {
-        isDarkMode = true;
-        document.body.classList.add('dark-mode');
-        themeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
-    }
-}
-
-themeToggle.addEventListener('click', () => {
-    isDarkMode = !isDarkMode;
-    document.body.classList.toggle('dark-mode', isDarkMode);
-    localStorage.setItem('darkMode', isDarkMode);
-    
-    if (isDarkMode) {
-        themeToggle.innerHTML = '<i class="fas fa-sun"></i><span>Light Mode</span>';
-    } else {
-        themeToggle.innerHTML = '<i class="fas fa-moon"></i><span>Dark Mode</span>';
-    }
-});
-
-// File input & preview with enhanced validation
-const imageInput = document.getElementById('imageInput');
-const previewImage = document.getElementById('previewImage');
-const previewContainer = document.getElementById('previewContainer');
-const imageSize = document.getElementById('imageSize').querySelector('span');
-const imageType = document.getElementById('imageType').querySelector('span');
-const imageFileSize = document.getElementById('imageFileSize').querySelector('span');
-
-imageInput.addEventListener('change', async function(event) {
-    const file = event.target.files[0];
-    if (file) {
-        try {
-            // Validate file
-            validateFile(file);
-            
-            // Show loading state
-            showNotification('Processing image...', 'info');
-            
-            // Compress image if needed
-            let processedFile = file;
-            if (file.size > 5 * 1024 * 1024) { // Compress if > 5MB
-                processedFile = await compressImage(file);
-                showNotification('Image compressed for better performance', 'success');
-            }
-            
-            currentImage = processedFile;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                previewImage.src = e.target.result;
-                previewContainer.style.display = 'block';
-                
-                // Get image dimensions
-                const img = new Image();
-                img.onload = () => {
-                    imageSize.textContent = `${img.width} × ${img.height}`;
-                    imageType.textContent = file.type.split('/')[1]?.toUpperCase() || file.type;
-                    imageFileSize.textContent = formatBytes(file.size);
-                };
-                img.src = e.target.result;
-                
-                enableActionButtons();
-                showNotification('Image loaded successfully!', 'success');
-            };
-            reader.readAsDataURL(processedFile);
-        } catch (error) {
-            showNotification(error.message, 'error');
-            imageInput.value = '';
-        }
-    }
-});
-
-function enableActionButtons() {
-    document.getElementById('generateBtn').disabled = false;
-    document.getElementById('analyzeBtn').disabled = false;
-    document.getElementById('enhanceBtn').disabled = false;
-}
-
-// Enhanced drag & drop with better feedback
-const uploadArea = document.getElementById('uploadArea');
-uploadArea.addEventListener('dragover', e => {
-    e.preventDefault();
-    uploadArea.classList.add('dragover');
-    showNotification('Drop your image here', 'info');
-});
-
-uploadArea.addEventListener('dragleave', e => {
-    e.preventDefault();
-    uploadArea.classList.remove('dragover');
-});
-
-uploadArea.addEventListener('drop', async e => {
-    e.preventDefault();
-    uploadArea.classList.remove('dragover');
-    if (e.dataTransfer.files.length) {
-        imageInput.files = e.dataTransfer.files;
-        await imageInput.dispatchEvent(new Event('change'));
-    }
-});
-
-uploadArea.addEventListener('click', () => imageInput.click());
-
-// Progress bar with enhanced feedback
-const progressContainer = document.getElementById('progressContainer');
-const progressFill = document.getElementById('progressFill');
-const progressText = document.getElementById('progressText');
-
-function showProgress(percent, text) {
+function generateCaption() {
+    // Show progress
     progressContainer.style.display = 'block';
-    progressFill.style.width = percent + '%';
-    progressText.textContent = text || 'Processing...';
+    generateBtn.disabled = true;
+    enhanceBtn.disabled = true;
+
+    // Get the uploaded image as base64
+    const file = imageInput.files[0];
+    if (!file) {
+        showNotification('Please select an image file first.', 'error');
+        progressContainer.style.display = 'none';
+        generateBtn.disabled = false;
+        enhanceBtn.disabled = false;
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = async function(event) {
+        // Remove the data URL prefix to get only base64
+        const base64 = event.target.result.split(',')[1];
+        try {
+            progressText.textContent = "Uploading image and generating caption...";
+            const response = await fetch('http://localhost:3000/api/caption', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ image: base64 })
+            });
+            const data = await response.json();
+            if (response.ok && data.caption) {
+                showResults(data.caption);
+            } else {
+                throw new Error(data.error || 'No caption returned');
+            }
+        } catch (err) {
+            showNotification('Failed to generate caption from backend. Showing demo.', 'error');
+            showResults(); // fallback to demo
+        }
+    };
+    reader.readAsDataURL(file);
 }
 
-function hideProgress() {
+function enhanceCaption() {
+    showNotification("Premium feature coming soon!", "info");
+}
+
+function showResults(realCaption) {
     progressContainer.style.display = 'none';
-    progressFill.style.width = '0%';
-    progressText.textContent = '';
-}
-
-// Enhanced results display
-const resultsContainer = document.getElementById('resultsContainer');
-const captionText = document.getElementById('captionText');
-const statsGrid = document.getElementById('statsGrid');
-const processingTimeValue = document.getElementById('processingTimeValue');
-const confidenceValue = document.getElementById('confidenceValue');
-const wordsValue = document.getElementById('wordsValue');
-const resolutionValue = document.getElementById('resolutionValue');
-const confidenceBadge = document.getElementById('confidenceBadge');
-
-function showResults(caption, stats) {
     resultsContainer.style.display = 'block';
-    captionText.textContent = caption;
-    
-    if (stats) {
-        processingTimeValue.textContent = stats.processingTime || '-';
-        confidenceValue.textContent = stats.confidence || '-';
-        wordsValue.textContent = stats.words || '-';
-        resolutionValue.textContent = stats.resolution || '-';
-        
-        if (stats.confidence) {
-            confidenceBadge.textContent = `Confidence: ${stats.confidence}`;
-            confidenceBadge.style.display = 'inline-block';
+
+    if (realCaption) {
+        captionText.textContent = realCaption;
+        // Optionally, you can clear or set stats to N/A or fetch from backend if available
+        objectsCount.textContent = '-';
+        processingTime.textContent = '-';
+        wordsCount.textContent = realCaption.split(' ').length;
+        accuracyScore.textContent = '-';
+        confidenceBadge.textContent = 'AI Caption';
+        confidenceBadge.style.background = "var(--accent-gradient)";
+    } else {
+        // Random demo caption and stats
+        const randomIndex = Math.floor(Math.random() * demoCaptions.length);
+        captionText.textContent = demoCaptions[randomIndex];
+        objectsCount.textContent = demoStats.objects[randomIndex];
+        processingTime.textContent = demoStats.time[randomIndex];
+        wordsCount.textContent = demoStats.words[randomIndex];
+        accuracyScore.textContent = demoStats.accuracy[randomIndex];
+        // Update confidence badge
+        const confidence = demoStats.accuracy[randomIndex];
+        confidenceBadge.textContent = `${confidence}% Confidence`;
+        if (confidence >= 95) {
+            confidenceBadge.style.background = "var(--success-gradient)";
+        } else if (confidence >= 85) {
+            confidenceBadge.style.background = "linear-gradient(135deg, #f6d365 0%, #fda085 100%)";
         } else {
-            confidenceBadge.style.display = 'none';
+            confidenceBadge.style.background = "var(--warning-gradient)";
         }
     }
-    
-    statsGrid.style.display = 'grid';
+    // Scroll to results
     resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-function hideResults() {
+function resetAll() {
+    imageInput.value = '';
+    previewImage.src = '';
+    previewContainer.style.display = 'none';
+    uploadArea.style.display = 'flex';
     resultsContainer.style.display = 'none';
-    statsGrid.style.display = 'none';
-    confidenceBadge.style.display = 'none';
+    progressContainer.style.display = 'none';
+    generateBtn.disabled = true;
+    enhanceBtn.disabled = true;
+    resetBtn.disabled = true;
 }
 
-// Enhanced action buttons with better UX
-const generateBtn = document.getElementById('generateBtn');
-const analyzeBtn = document.getElementById('analyzeBtn');
-const enhanceBtn = document.getElementById('enhanceBtn');
-const clearBtn = document.getElementById('clearBtn');
-const copyBtn = document.getElementById('copyBtn');
-const downloadBtn = document.getElementById('downloadBtn');
-const speakBtn = document.getElementById('speakBtn');
-const shareBtn = document.getElementById('shareBtn');
-const regenerateBtn = document.getElementById('regenerateBtn');
-
-function setButtonsEnabled(enabled) {
-    generateBtn.disabled = !enabled || isProcessing;
-    analyzeBtn.disabled = !enabled || isProcessing;
-    enhanceBtn.disabled = !enabled || isProcessing;
+function copyCaption() {
+    navigator.clipboard.writeText(captionText.textContent)
+        .then(() => showNotification('Caption copied to clipboard!', 'success'))
+        .catch(() => showNotification('Failed to copy caption', 'error'));
 }
 
-clearBtn.addEventListener('click', () => {
-    if (confirm('Are you sure you want to clear everything?')) {
-        imageInput.value = '';
-        previewImage.src = '';
-        previewContainer.style.display = 'none';
-        hideResults();
-        setButtonsEnabled(false);
-        currentImage = null;
-        showNotification('All cleared!', 'success');
-    }
-});
-
-copyBtn.addEventListener('click', async () => {
-    try {
-        await navigator.clipboard.writeText(captionText.textContent || '');
-        showNotification('Copied to clipboard!', 'success');
-    } catch (error) {
-        showNotification('Failed to copy. Please try again.', 'error');
-    }
-});
-
-downloadBtn.addEventListener('click', () => {
-    const caption = captionText.textContent || '';
-    if (!caption) {
-        showNotification('No caption to download', 'error');
-        return;
-    }
-    
-    const blob = new Blob([caption], { type: 'text/plain' });
+function downloadCaption() {
+    const blob = new Blob([captionText.textContent], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `caption_${new Date().toISOString().slice(0, 10)}.txt`;
+    a.download = 'ai-caption.txt';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     showNotification('Caption downloaded!', 'success');
-});
+}
 
-speakBtn.addEventListener('click', () => {
-    const caption = captionText.textContent;
-    if (caption) {
-        const utterance = new SpeechSynthesisUtterance(caption);
-        utterance.rate = 0.9;
-        utterance.pitch = 1;
-        window.speechSynthesis.speak(utterance);
-        showNotification('Speaking caption...', 'info');
-    } else {
-        showNotification('No caption to speak', 'error');
-    }
-});
-
-shareBtn.addEventListener('click', async () => {
-    const caption = captionText.textContent;
-    if (!caption) {
-        showNotification('No caption to share', 'error');
-        return;
-    }
-    
+function shareCaption() {
     if (navigator.share) {
-        try {
-            await navigator.share({ 
-                text: caption,
-                title: 'AI Generated Caption',
-                url: window.location.href
-            });
-            showNotification('Shared successfully!', 'success');
-        } catch (error) {
-            showNotification('Share cancelled', 'info');
-        }
+        navigator.share({
+            title: 'AI Generated Caption',
+            text: captionText.textContent,
+            url: window.location.href
+        }).catch(() => showNotification('Sharing cancelled', 'info'));
     } else {
-        // Fallback for browsers without Web Share API
-        try {
-            await navigator.clipboard.writeText(caption);
-            showNotification('Caption copied to clipboard for sharing!', 'success');
-        } catch (error) {
-            showNotification('Share not supported on this device', 'error');
-        }
+        showNotification('Web Share API not supported', 'error');
     }
-});
+}
 
-regenerateBtn.addEventListener('click', () => {
-    if (currentImage && !isProcessing) {
-        generateCaption();
-    } else if (isProcessing) {
-        showNotification('Please wait for current processing to complete', 'info');
+function toggleTheme() {
+    document.body.classList.toggle('dark-theme');
+    const icon = themeToggle.querySelector('i');
+    const text = themeToggle.querySelector('span');
+    
+    if (document.body.classList.contains('dark-theme')) {
+        icon.classList.replace('fa-moon', 'fa-sun');
+        text.textContent = 'Light Mode';
     } else {
-        showNotification('No image to regenerate caption for', 'error');
+        icon.classList.replace('fa-sun', 'fa-moon');
+        text.textContent = 'Dark Mode';
     }
-});
+}
 
-// Enhanced notification system
-const notification = document.getElementById('notification');
-let notificationTimeout;
-
-function showNotification(msg, type = 'info') {
-    // Clear existing notification
-    if (notificationTimeout) {
-        clearTimeout(notificationTimeout);
-    }
+function showNotification(message, type) {
+    notification.className = `notification ${type}`;
+    notification.querySelector('.notification-content').textContent = message;
+    notification.classList.add('show');
     
-    notification.textContent = msg;
-    notification.className = `notification show ${type}`;
-    
-    // Auto-hide after 3 seconds
-    notificationTimeout = setTimeout(() => {
-        notification.className = 'notification';
-    }, 3000);
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 5000);
 }
 
-// Enhanced caption generation with better error handling
-async function generateCaption() {
-    if (!currentImage) {
-        showNotification('Please upload an image first.', 'error');
-        return;
-    }
-    
-    if (isProcessing) {
-        showNotification('Already processing an image. Please wait.', 'info');
-        return;
-    }
-    
-    setLoadingState(true);
-    showProgress(30, 'Uploading image...');
-    captionText.textContent = 'Generating caption...';
-    hideResults();
-    
-    try {
-        const reader = new FileReader();
-        reader.readAsDataURL(currentImage);
-        
-        reader.onload = async function() {
-            const base64Image = reader.result.split(',')[1];
-            
-            try {
-                showProgress(60, 'Processing with AI...');
-                const start = Date.now();
-                
-                const response = await fetch('http://localhost:3000/api/caption', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ image: base64Image })
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                }
-                
-                const data = await response.json();
-                const elapsed = ((Date.now() - start) / 1000).toFixed(2) + 's';
-                
-                if (data.caption) {
-                    showResults(data.caption, {
-                        processingTime: elapsed,
-                        confidence: data.confidence || '-',
-                        words: data.caption.split(' ').length,
-                        resolution: previewImage.naturalWidth + 'x' + previewImage.naturalHeight
-                    });
-                    showNotification('Caption generated successfully!', 'success');
-                } else {
-                    throw new Error(data.error || 'Failed to generate caption');
-                }
-            } catch (error) {
-                console.error('API Error:', error);
-                captionText.textContent = `Error: ${error.message}`;
-                showNotification(`Failed to generate caption: ${error.message}`, 'error');
-            } finally {
-                setLoadingState(false);
-                hideProgress();
-            }
-        };
-    } catch (error) {
-        console.error('File Error:', error);
-        captionText.textContent = 'Error processing image file';
-        showNotification('Error processing image file', 'error');
-        setLoadingState(false);
-        hideProgress();
-    }
-}
-
-generateBtn.addEventListener('click', generateCaption);
-
-// Enhanced feature stubs with better feedback
-analyzeBtn.addEventListener('click', () => {
-    showNotification('Deep Analysis feature coming soon! Stay tuned for advanced image breakdown capabilities.', 'info');
-});
-
-enhanceBtn.addEventListener('click', () => {
-    showNotification('Enhanced Mode feature coming soon! Get even more detailed AI analysis.', 'info');
-});
-
-// Clear all functionality
-function clearAll() {
-    currentImage = null;
-    imageInput.value = '';
-    previewContainer.style.display = 'none';
-    hideResults();
-    setButtonsEnabled(false);
-    showNotification('All cleared!', 'info');
-}
-
-// Copy caption functionality
-function copyCaption() {
-    const caption = captionText.textContent;
-    if (caption) {
-        navigator.clipboard.writeText(caption).then(() => {
-            showNotification('Caption copied to clipboard!', 'success');
-        }).catch(() => {
-            showNotification('Failed to copy caption', 'error');
-        });
-    } else {
-        showNotification('No caption to copy', 'error');
-    }
-}
-
-// Download caption functionality
-function downloadCaption() {
-    const caption = captionText.textContent;
-    if (caption) {
-        const blob = new Blob([caption], { type: 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'ai-caption.txt';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        showNotification('Caption downloaded!', 'success');
-    } else {
-        showNotification('No caption to download', 'error');
-    }
-}
-
-// Regenerate caption functionality
-function regenerateCaption() {
-    if (currentImage && !isProcessing) {
-        generateCaption();
-    } else if (isProcessing) {
-        showNotification('Please wait for current processing to complete', 'info');
-    } else {
-        showNotification('No image to regenerate caption for', 'error');
-    }
-}
-
-// Initialize theme on load
-document.addEventListener('DOMContentLoaded', function() {
-    initTheme();
-    showNotification('Welcome to AI Vision Caption Studio Pro! Press F1 for keyboard shortcuts.', 'info');
-});
-
-// Service Worker for offline support (future enhancement)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-                console.log('SW registered: ', registration);
-            })
-            .catch(registrationError => {
-                console.log('SW registration failed: ', registrationError);
-            });
-    });
-}
+// Initialize
+resetAll();
