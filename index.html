@@ -17,51 +17,104 @@
         </div>
     </div>
 
-    <!-- Keyboard Shortcuts Help Modal -->
+    <!-- Keyboard Shortcuts Modal -->
     <div class="modal" id="helpModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3><i class="fas fa-keyboard"></i> Keyboard Shortcuts</h3>
-                <button class="modal-close" id="closeHelpModal">&times;</button>
+                <h3>
+                    <i class="fas fa-keyboard"></i>
+                    Keyboard Shortcuts
+                </h3>
+                <button class="modal-close" onclick="simpleHideHelp()" aria-label="Close modal">
+                    <i class="fas fa-times"></i>
+                </button>
             </div>
             <div class="modal-body">
-                <div class="shortcut-grid">
-                    <div class="shortcut-item">
-                        <kbd>Ctrl/Cmd + O</kbd>
-                        <span>Open image file</span>
+                <div class="shortcuts-grid">
+                    <div class="shortcut-category">
+                        <h4>
+                            <i class="fas fa-upload"></i>
+                            File Operations
+                        </h4>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Upload Image</span>
+                            <div class="shortcut-keys">
+                                <kbd>Ctrl</kbd>
+                                <kbd class="plus">+</kbd>
+                                <kbd>U</kbd>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Browse Files</span>
+                            <div class="shortcut-keys">
+                                <kbd>Space</kbd>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Clear All</span>
+                            <div class="shortcut-keys">
+                                <kbd>Escape</kbd>
+                            </div>
+                        </div>
                     </div>
-                    <div class="shortcut-item">
-                        <kbd>Enter</kbd>
-                        <span>Generate caption</span>
+
+                    <div class="shortcut-category">
+                        <h4>
+                            <i class="fas fa-magic"></i>
+                            App Controls
+                        </h4>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Toggle Theme</span>
+                            <div class="shortcut-keys">
+                                <kbd>Ctrl</kbd>
+                                <kbd class="plus">+</kbd>
+                                <kbd>T</kbd>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Show Help</span>
+                            <div class="shortcut-keys">
+                                <kbd>F1</kbd>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Generate Caption</span>
+                            <div class="shortcut-keys">
+                                <kbd>Enter</kbd>
+                            </div>
+                        </div>
                     </div>
-                    <div class="shortcut-item">
-                        <kbd>Ctrl/Cmd + C</kbd>
-                        <span>Copy caption</span>
+
+                    <div class="shortcut-category">
+                        <h4>
+                            <i class="fas fa-mobile-alt"></i>
+                            Mobile & Touch
+                        </h4>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Tap to Upload</span>
+                            <div class="shortcut-keys">
+                                <kbd>Tap</kbd>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Swipe to Clear</span>
+                            <div class="shortcut-keys">
+                                <kbd>Swipe</kbd>
+                            </div>
+                        </div>
+                        <div class="shortcut-item">
+                            <span class="shortcut-description">Long Press Help</span>
+                            <div class="shortcut-keys">
+                                <kbd>Hold</kbd>
+                            </div>
+                        </div>
                     </div>
-                    <div class="shortcut-item">
-                        <kbd>Ctrl/Cmd + D</kbd>
-                        <span>Download caption</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <kbd>Ctrl/Cmd + R</kbd>
-                        <span>Reset all</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <kbd>Ctrl/Cmd + K</kbd>
-                        <span>Show this help</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <kbd>Ctrl/Cmd + T</kbd>
-                        <span>Toggle theme</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <kbd>F1</kbd>
-                        <span>Show help</span>
-                    </div>
-                    <div class="shortcut-item">
-                        <kbd>Esc</kbd>
-                        <span>Close modals</span>
-                    </div>
+                </div>
+
+                <div class="shortcut-note">
+                    <i class="fas fa-lightbulb"></i>
+                    <strong>Pro Tip:</strong> Use these shortcuts to navigate faster and boost your productivity. 
+                    Most shortcuts work on both desktop and mobile devices!
                 </div>
             </div>
         </div>
@@ -83,11 +136,11 @@
             </div>
 
             <div class="controls">
-                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light theme" onclick="console.log('Theme toggle clicked via inline!'); toggleTheme();">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light theme" onclick="simpleToggleTheme(); console.log('Inline theme toggle clicked!');">
                     <i class="fas fa-moon" aria-hidden="true"></i>
                     <span>Dark Mode</span>
                 </button>
-                <button class="help-btn" id="helpBtn" aria-label="Show keyboard shortcuts" onclick="console.log('Help button clicked via inline!'); showHelpModal();">
+                <button class="help-btn" id="helpBtn" aria-label="Show keyboard shortcuts" onclick="simpleShowHelp(); console.log('Inline help button clicked!');">
                     <i class="fas fa-question-circle" aria-hidden="true"></i>
                     <span>Help</span>
                 </button>

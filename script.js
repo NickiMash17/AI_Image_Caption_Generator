@@ -748,43 +748,6 @@ function shareCaption() {
     }
 }
 
-function toggleTheme() {
-    console.log('toggleTheme function called');
-    
-    const body = document.body;
-    const themeToggle = document.getElementById('themeToggle');
-    
-    if (!themeToggle) {
-        console.error('Theme toggle not found in toggleTheme');
-        return;
-    }
-    
-    const icon = themeToggle.querySelector('i');
-    const text = themeToggle.querySelector('span');
-    
-    console.log('Theme toggle elements:', { icon, text });
-    
-    if (icon && text) {
-        if (body.classList.contains('dark-theme')) {
-            // Switch to light theme
-            body.classList.remove('dark-theme');
-            icon.classList.replace('fa-sun', 'fa-moon');
-            text.textContent = 'Dark Mode';
-            localStorage.setItem('theme', 'light');
-            console.log('Switched to light theme');
-        } else {
-            // Switch to dark theme
-            body.classList.add('dark-theme');
-            icon.classList.replace('fa-moon', 'fa-sun');
-            text.textContent = 'Light Mode';
-            localStorage.setItem('theme', 'dark');
-            console.log('Switched to dark theme');
-        }
-    } else {
-        console.error('Icon or text not found in theme toggle');
-    }
-}
-
 function showHelpModal() {
     console.log('showHelpModal function called');
     
@@ -873,235 +836,392 @@ function handleKeyboardShortcuts(e) {
     }
 }
 
-function showNotification(message, type) {
-    notification.className = `notification ${type}`;
-    notification.querySelector('.notification-content').textContent = message;
-    notification.classList.add('show');
+// Enhanced keyboard shortcuts functionality
+function setupKeyboardShortcuts() {
+    console.log('🎹 Setting up keyboard shortcuts...');
     
-    // Auto-hide notification
-    setTimeout(() => {
-        notification.classList.remove('show');
-    }, 5000);
-}
-
-// Initialize theme from localStorage
-function initializeTheme() {
-    const savedTheme = localStorage.getItem('theme');
-    console.log('Initializing theme, saved theme:', savedTheme);
-    
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-theme');
-        const icon = themeToggle.querySelector('i');
-        const text = themeToggle.querySelector('span');
-        if (icon && text) {
-            icon.classList.replace('fa-moon', 'fa-sun');
-            text.textContent = 'Light Mode';
-        }
-    }
-    
-    // Set initial theme state
-    const isDark = document.body.classList.contains('dark-theme');
-    console.log('Theme initialized, isDark:', isDark);
-}
-
-// Close modal when clicking outside
-helpModal.addEventListener('click', (e) => {
-    if (e.target === helpModal) {
-        hideHelpModal();
-    }
-});
-
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM loaded, initializing app...');
-    
-    // Initialize theme
-    initializeTheme();
-    
-    // Initialize mobile optimizations
-    optimizeForMobile();
-    
-    // Reset app state
-    resetAll();
-    
-    // Ensure loading overlay is hidden by default
-    loadingOverlay.style.display = 'none';
-    loadingOverlay.classList.remove('show');
-    
-    // Add visual feedback for controls
-    addControlFeedback();
-    
-    // Add some visual feedback for the upload area
-    uploadArea.addEventListener('mouseenter', () => {
-        if (!isTouchDevice) {
-            uploadArea.style.transform = 'translateY(-2px)';
-        }
-    });
-    
-    uploadArea.addEventListener('mouseleave', () => {
-        if (!isTouchDevice) {
-            uploadArea.style.transform = 'translateY(0)';
-        }
-    });
-    
-    // Mobile-specific optimizations
-    if (isMobile) {
-        // Reduce motion on mobile for better performance
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            document.body.style.setProperty('--transition-smooth', 'all 0.2s ease');
-            document.body.style.setProperty('--transition-spring', 'all 0.3s ease');
+    document.addEventListener('keydown', function(e) {
+        // Don't trigger shortcuts when typing in input fields
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+            return;
         }
         
-        // Add mobile-specific keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            // On mobile, allow spacebar to trigger buttons
-            if (e.key === ' ' && e.target.tagName !== 'INPUT') {
-                e.preventDefault();
-                const activeElement = document.activeElement;
-                if (activeElement && activeElement.tagName === 'BUTTON') {
-                    activeElement.click();
-                }
-            }
-        });
-    }
-    
-    // Add enhanced upload area interactions
-    enhanceUploadArea();
-    
-    console.log('App initialization complete!');
-});
-
-// Add visual feedback for controls
-function addControlFeedback() {
-    const themeToggle = document.getElementById('themeToggle');
-    const helpBtn = document.getElementById('helpBtn');
-    
-    console.log('Looking for controls:', { themeToggle, helpBtn });
-    
-    if (themeToggle) {
-        // Remove any existing listeners
-        themeToggle.replaceWith(themeToggle.cloneNode(true));
-        const newThemeToggle = document.getElementById('themeToggle');
-        
-        newThemeToggle.addEventListener('click', function(e) {
+        // Ctrl/Cmd + U: Upload image
+        if ((e.ctrlKey || e.metaKey) && e.key === 'u') {
             e.preventDefault();
-            console.log('Theme toggle clicked!');
-            
-            // Add visual feedback
-            this.classList.add('changing');
-            setTimeout(() => this.classList.remove('changing'), 500);
-            
-            // Toggle theme
-            toggleTheme();
-        });
-        
-        console.log('Theme toggle initialized successfully');
-    } else {
-        console.error('Theme toggle button not found!');
-    }
-    
-    if (helpBtn) {
-        // Remove any existing listeners
-        helpBtn.replaceWith(helpBtn.cloneNode(true));
-        const newHelpBtn = document.getElementById('helpBtn');
-        
-        newHelpBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            console.log('Help button clicked!');
-            
-            // Add visual feedback
-            this.style.transform = 'scale(0.95)';
-            setTimeout(() => this.style.transform = '', 150);
-            
-            // Show help modal
-            showHelpModal();
-        });
-        
-        console.log('Help button initialized successfully');
-    } else {
-        console.error('Help button not found!');
-    }
-}
-
-// Enhanced upload area functionality
-function enhanceUploadArea() {
-    // Add visual feedback for drag and drop
-    uploadArea.addEventListener('dragenter', (e) => {
-        e.preventDefault();
-        uploadArea.classList.add('dragover');
-        uploadArea.style.transform = 'scale(1.02)';
-    });
-    
-    uploadArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        uploadArea.classList.add('dragover');
-    });
-    
-    uploadArea.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        if (!uploadArea.contains(e.relatedTarget)) {
-            uploadArea.classList.remove('dragover');
-            uploadArea.style.transform = 'scale(1)';
-        }
-    });
-    
-    uploadArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        uploadArea.classList.remove('dragover');
-        uploadArea.style.transform = 'scale(1)';
-        
-        if (e.dataTransfer.files.length) {
-            imageInput.files = e.dataTransfer.files;
-            handleFileSelect({ target: imageInput });
-        }
-    });
-    
-    // Add click feedback
-    uploadArea.addEventListener('mousedown', () => {
-        if (!isTouchDevice) {
-            uploadArea.style.transform = 'scale(0.98)';
-        }
-    });
-    
-    uploadArea.addEventListener('mouseup', () => {
-        if (!isTouchDevice) {
-            uploadArea.style.transform = 'scale(1)';
-        }
-    });
-    
-    // Add touch feedback for mobile
-    if (isTouchDevice) {
-        uploadArea.addEventListener('touchstart', () => {
-            uploadArea.style.transform = 'scale(0.98)';
-        });
-        
-        uploadArea.addEventListener('touchend', () => {
-            uploadArea.style.transform = 'scale(1)';
-        });
-    }
-    
-    // Add keyboard navigation
-    uploadArea.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
+            console.log('⌨️ Ctrl+U: Opening file picker');
             imageInput.click();
         }
-    });
-    
-    // Add file input change feedback
-    imageInput.addEventListener('change', (e) => {
-        if (e.target.files.length > 0) {
-            uploadArea.style.borderColor = 'var(--accent-gradient)';
-            uploadArea.style.background = 'rgba(79, 172, 254, 0.1)';
-            
-            // Reset after a short delay
-            setTimeout(() => {
-                uploadArea.style.borderColor = '';
-                uploadArea.style.background = '';
-            }, 1000);
+        
+        // Ctrl/Cmd + T: Toggle theme
+        if ((e.ctrlKey || e.metaKey) && e.key === 't') {
+            e.preventDefault();
+            console.log('⌨️ Ctrl+T: Toggling theme');
+            simpleToggleTheme();
+        }
+        
+        // F1: Show help
+        if (e.key === 'F1') {
+            e.preventDefault();
+            console.log('⌨️ F1: Showing help modal');
+            simpleShowHelp();
+        }
+        
+        // Space: Browse files (when not in input)
+        if (e.key === ' ' && e.target.tagName !== 'INPUT') {
+            e.preventDefault();
+            console.log('⌨️ Space: Opening file picker');
+            imageInput.click();
+        }
+        
+        // Enter: Generate caption (when image is selected)
+        if (e.key === 'Enter' && imageInput.files.length > 0) {
+            e.preventDefault();
+            console.log('⌨️ Enter: Generating caption');
+            handleFileSelect({ target: imageInput });
+        }
+        
+        // Escape: Close modals or clear all
+        if (e.key === 'Escape') {
+            const modal = document.getElementById('helpModal');
+            if (modal && modal.classList.contains('show')) {
+                console.log('⌨️ Escape: Closing help modal');
+                simpleHideHelp();
+            } else if (imageInput.files.length > 0) {
+                console.log('⌨️ Escape: Clearing all');
+                resetAll();
+            }
+        }
+        
+        // Ctrl/Cmd + C: Copy caption (when available)
+        if ((e.ctrlKey || e.metaKey) && e.key === 'c') {
+            const captionText = document.querySelector('.caption-text');
+            if (captionText && captionText.textContent.trim()) {
+                e.preventDefault();
+                navigator.clipboard.writeText(captionText.textContent.trim()).then(() => {
+                    console.log('⌨️ Ctrl+C: Caption copied to clipboard');
+                    showNotification('Caption copied to clipboard!', 'success');
+                }).catch(() => {
+                    console.log('⌨️ Ctrl+C: Failed to copy caption');
+                });
+            }
+        }
+        
+        // Ctrl/Cmd + R: Reset all
+        if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+            e.preventDefault();
+            console.log('⌨️ Ctrl+R: Resetting all');
+            resetAll();
         }
     });
+    
+    console.log('✅ Keyboard shortcuts setup complete');
 }
+
+// Enhanced mobile touch gestures
+function setupMobileGestures() {
+    console.log('📱 Setting up mobile gestures...');
+    
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
+    
+    // Swipe to clear
+    document.addEventListener('touchstart', function(e) {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+    });
+    
+    document.addEventListener('touchend', function(e) {
+        touchEndX = e.changedTouches[0].screenX;
+        touchEndY = e.changedTouches[0].screenY;
+        handleSwipe();
+    });
+    
+    function handleSwipe() {
+        const swipeThreshold = 50;
+        const diffX = touchStartX - touchEndX;
+        const diffY = touchStartY - touchEndY;
+        
+        // Horizontal swipe (left or right)
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > swipeThreshold) {
+            if (diffX > 0) {
+                // Swipe left - clear all
+                console.log('📱 Swipe left detected: Clearing all');
+                resetAll();
+                showNotification('Swiped left - cleared all!', 'info');
+            } else {
+                // Swipe right - show help
+                console.log('📱 Swipe right detected: Showing help');
+                simpleShowHelp();
+            }
+        }
+        
+        // Vertical swipe (up or down)
+        if (Math.abs(diffY) > Math.abs(diffX) && Math.abs(diffY) > swipeThreshold) {
+            if (diffY > 0) {
+                // Swipe up - toggle theme
+                console.log('📱 Swipe up detected: Toggling theme');
+                simpleToggleTheme();
+            } else {
+                // Swipe down - upload image
+                console.log('📱 Swipe down detected: Opening file picker');
+                imageInput.click();
+            }
+        }
+    }
+    
+    // Long press for help
+    let longPressTimer;
+    let longPressThreshold = 800;
+    
+    document.addEventListener('touchstart', function(e) {
+        longPressTimer = setTimeout(() => {
+            console.log('📱 Long press detected: Showing help');
+            simpleShowHelp();
+        }, longPressThreshold);
+    });
+    
+    document.addEventListener('touchend', function() {
+        clearTimeout(longPressTimer);
+    });
+    
+    document.addEventListener('touchmove', function() {
+        clearTimeout(longPressTimer);
+    });
+    
+    console.log('✅ Mobile gestures setup complete');
+}
+
+// Enhanced notification system
+function showNotification(message, type = 'info', duration = 3000) {
+    console.log(`🔔 Showing notification: ${message} (${type})`);
+    
+    // Remove existing notifications
+    const existingNotifications = document.querySelectorAll('.notification');
+    existingNotifications.forEach(notification => notification.remove());
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Show with animation
+    setTimeout(() => notification.classList.add('show'), 100);
+    
+    // Auto-hide
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }, duration);
+}
+
+// Initialize everything
+function initializeApp() {
+    console.log('🚀 Initializing enhanced app...');
+    
+    // Setup keyboard shortcuts
+    setupKeyboardShortcuts();
+    
+    // Setup mobile gestures
+    setupMobileGestures();
+    
+    // Initialize theme
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark-theme');
+        const themeBtn = document.getElementById('themeToggle');
+        if (themeBtn) {
+            const icon = themeBtn.querySelector('i');
+            const text = themeBtn.querySelector('span');
+            if (icon) icon.className = 'fas fa-sun';
+            if (text) text.textContent = 'Light Mode';
+        }
+    }
+    
+    // Hide loading overlay
+    if (loadingOverlay) {
+        loadingOverlay.style.display = 'none';
+        loadingOverlay.classList.remove('show');
+    }
+    
+    console.log('✅ Enhanced app initialization complete');
+}
+
+// Call initialization when DOM is ready
+document.addEventListener('DOMContentLoaded', initializeApp);
+window.addEventListener('load', initializeApp);
+
+// Backup initialization
+setTimeout(initializeApp, 100);
+setTimeout(initializeApp, 500);
+
+// SIMPLE THEME TOGGLE - BULLETPROOF VERSION
+function simpleToggleTheme() {
+    console.log('SIMPLE THEME TOGGLE CALLED!');
+    
+    // Get the body element
+    const body = document.body;
+    
+    // Toggle the dark-theme class
+    body.classList.toggle('dark-theme');
+    
+    // Get the theme toggle button
+    const themeBtn = document.getElementById('themeToggle');
+    if (themeBtn) {
+        const icon = themeBtn.querySelector('i');
+        const text = themeBtn.querySelector('span');
+        
+        if (icon && text) {
+            if (body.classList.contains('dark-theme')) {
+                // Dark theme is ON
+                icon.className = 'fas fa-sun';
+                text.textContent = 'Light Mode';
+                localStorage.setItem('theme', 'dark');
+                console.log('✅ Switched to DARK theme');
+            } else {
+                // Light theme is ON
+                icon.className = 'fas fa-moon';
+                text.textContent = 'Dark Mode';
+                localStorage.setItem('theme', 'light');
+                console.log('✅ Switched to LIGHT theme');
+            }
+        }
+    }
+    
+    // Visual feedback
+    console.log('Current theme:', body.classList.contains('dark-theme') ? 'DARK' : 'LIGHT');
+}
+
+// SIMPLE HELP MODAL - BULLETPROOF VERSION
+function simpleShowHelp() {
+    console.log('SIMPLE HELP MODAL CALLED!');
+    
+    const modal = document.getElementById('helpModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.classList.add('show');
+        console.log('✅ Help modal opened');
+    } else {
+        console.log('❌ Help modal not found');
+    }
+}
+
+function simpleHideHelp() {
+    console.log('SIMPLE HIDE HELP CALLED!');
+    
+    const modal = document.getElementById('helpModal');
+    if (modal) {
+        modal.classList.remove('show');
+        modal.style.display = 'none';
+        console.log('✅ Help modal closed');
+    }
+}
+
+// SIMPLE INITIALIZATION - BULLETPROOF VERSION
+function simpleInit() {
+    console.log('🚀 SIMPLE INITIALIZATION STARTED');
+    
+    // Wait a bit to ensure DOM is ready
+    setTimeout(() => {
+        console.log('⏰ DOM should be ready now');
+        
+        // Add click handlers directly to buttons
+        const themeBtn = document.getElementById('themeToggle');
+        const helpBtn = document.getElementById('helpBtn');
+        
+        if (themeBtn) {
+            console.log('🎨 Found theme button, adding click handler');
+            themeBtn.onclick = simpleToggleTheme;
+            
+            // Also add as a backup
+            themeBtn.addEventListener('click', simpleToggleTheme);
+            
+            // Set initial state
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                const icon = themeBtn.querySelector('i');
+                const text = themeBtn.querySelector('span');
+                if (icon) icon.className = 'fas fa-sun';
+                if (text) text.textContent = 'Light Mode';
+            }
+        } else {
+            console.log('❌ Theme button NOT found');
+        }
+        
+        if (helpBtn) {
+            console.log('❓ Found help button, adding click handler');
+            helpBtn.onclick = simpleShowHelp;
+            
+            // Also add as a backup
+            helpBtn.addEventListener('click', simpleShowHelp);
+        } else {
+            console.log('❌ Help button NOT found');
+        }
+        
+        // Close modal when clicking outside
+        const modal = document.getElementById('helpModal');
+        if (modal) {
+            modal.onclick = function(e) {
+                if (e.target === modal) {
+                    simpleHideHelp();
+                }
+            };
+        }
+        
+        // Close modal with escape key
+        document.onkeydown = function(e) {
+            if (e.key === 'Escape') {
+                simpleHideHelp();
+            }
+        };
+        
+        console.log('✅ SIMPLE INITIALIZATION COMPLETE');
+        
+        // Test if buttons are clickable
+        console.log('🧪 Testing button accessibility...');
+        if (themeBtn) {
+            console.log('🎨 Theme button:', themeBtn.outerHTML);
+            console.log('🎨 Theme button onclick:', themeBtn.onclick);
+        }
+        if (helpBtn) {
+            console.log('❓ Help button:', helpBtn.outerHTML);
+            console.log('❓ Help button onclick:', helpBtn.onclick);
+        }
+        
+    }, 100);
+}
+
+// MULTIPLE INITIALIZATION METHODS - BULLETPROOF
+document.addEventListener('DOMContentLoaded', simpleInit);
+window.addEventListener('load', simpleInit);
+
+// Also try immediate execution
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', simpleInit);
+} else {
+    simpleInit();
+}
+
+// Backup initialization
+setTimeout(simpleInit, 500);
+setTimeout(simpleInit, 1000);
+setTimeout(simpleInit, 2000);
+
+console.log('🚀 SCRIPT LOADED - Multiple initialization methods ready');
 
 // Enhanced mobile error handling
 window.addEventListener('error', function(e) {
